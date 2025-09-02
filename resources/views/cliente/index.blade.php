@@ -55,23 +55,23 @@
                                 <tbody>
                                     @foreach ($clientes as $cliente)
                                         <tr>
-                                            <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $cliente->cedula }}</td>
-										<td >{{ $cliente->nombres }}</td>
-										<td >{{ $cliente->direccion }}</td>
-										<td >{{ $cliente->telefono }}</td>
-										<td >{{ $cliente->empresa }}</td>
-
-                                            <td>
+                                        <td>{{ ++$i }}</td>
+                                        <td>{{ $cliente->cedula }}</td>
+                                        <td>{{ $cliente->nombres }}</td>
+                                        <td class="d-none d-md-table-cell">{{ $cliente->direccion }}</td>
+                                        <td class="d-none d-md-table-cell">{{ $cliente->telefono }}</td>
+                                        <td class="d-none d-md-table-cell">{{ $cliente->empresa }}</td>
+                                        <td>
+                                            <div class="d-flex flex-column flex-md-row gap-1">
+                                                <a class="btn btn-sm btn-secondary" href="{{ route('clientes.show', $cliente->id) }}">Ver</a>
+                                                <a class="btn btn-sm btn-primary" href="{{ route('clientes.edit', $cliente->id) }}">Editar</a>
                                                 <form action="{{ route('clientes.destroy', $cliente->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-secondary " href="{{ route('clientes.show', $cliente->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-primary" href="{{ route('clientes.edit', $cliente->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Esta seguro  de eliminar el cliente ?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar cliente?')">Eliminar</button>
                                                 </form>
-                                            </td>
+                                            </div>
+                                        </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
