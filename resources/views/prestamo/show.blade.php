@@ -18,6 +18,7 @@
         <div class="form-group mb-2">
             <strong>Cuotas:</strong> {{ $prestamo->cuotas }}
         </div>
+        
         <div class="form-group mb-2">
             <strong>Interés Porcentaje:</strong> {{ $prestamo->interes_porcentaje }}%
         </div>
@@ -32,6 +33,30 @@
         @php
             $totalAbonado = $prestamo->pagos->sum('monto_abono');
             $estado = $totalAbonado >= $prestamo->monto ? 'Pagado' : 'Pendiente';
+
+            // Cálculo de cuotas restantes
+            $modalidad = $prestamo->modalidad_pago;
+            $cuotasTotales = $prestamo->cuotas;
+
+            // Cuotas por mes según modalidad
+            if ($modalidad === 'Mensual') {
+                $cuotasPorMes = 1;
+            } elseif ($modalidad === 'Quincenal') {
+                $cuotasPorMes = 2;
+            } elseif ($modalidad === 'Decadal') {
+                $cuotasPorMes = 3;
+            } else {
+                $cuotasPorMes = 1;
+            }
+
+            // Cuotas restantes
+            $cuotasRestantes = $cuotasTotales - $prestamo->pagos->count();
+
+            // Si el saldo está saldado, forzar a 0 cuotas restantes
+            if (($prestamo->monto - $totalAbonado) <= 0) {
+                $cuotasRestantes = 0;
+            }
+
         @endphp
 
         <div class="alert alert-info mt-3">
@@ -43,7 +68,9 @@
                 <span class="badge badge-warning">Pendiente</span>
             @endif
         </div>
-
+        <div class="form-group mb-2">
+            <strong>Cuotas restantes:</strong> {{ $cuotasRestantes }}
+        </div>
 
 
         {{-- Tabla de abonos realizados --}}

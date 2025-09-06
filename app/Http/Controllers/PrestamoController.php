@@ -64,6 +64,7 @@ class PrestamoController extends Controller
        $pago = new Pago();
 
         return view('prestamo.show', compact('prestamo','pago'));
+        return view('prestamos.show', compact('prestamo', 'cuotasRestantes'));
 
     }
 

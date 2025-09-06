@@ -10,17 +10,6 @@
         <h4>Datos del Préstamo</h4>
         <a class="btn btn-primary btn-sm" href="{{ route('prestamos.index') }}"> {{ __('Atras') }}</a>
     </div>
-    
-    <ul>
-        <li><strong>Cliente:</strong> {{ $prestamo->cliente?->nombres ?? 'Cliente no asignado' }}</li>
-        <li><strong>Cuotas:</strong> {{ $prestamo->cuotas }}</li>
-        <li><strong>Modalidad:</strong> {{ $prestamo->modalidad_pago }}</li>
-        <li><strong>Fecha Inicio:</strong> {{ $prestamo->fecha_inicio }}</li>
-        <li><strong>Monto Base:</strong> {{ '$' . number_format($prestamo->monto, 0, ',', '.') }}</li>
-    </ul>
-    
-    <hr>
-    
     @php
         // Datos base
         $modalidad = $prestamo->modalidad_pago;
@@ -53,8 +42,32 @@
     
         // Saldo pendiente real
         $saldoPendiente = $saldoFinal - $totalPagado;
+    
+        $cuotasTotales = $prestamo->cuotas;
+        $saldoFinal = $prestamo->monto + $interesTotal;
+                                        
+
+        // Primero, calcular cuotas restantes por cantidad de abonos
+        $cuotasRestantes = $cuotasTotales - $prestamo->pagos->count();
+
+        // Luego, si el saldo está saldado, forzar a 0 cuotas restantes
+        if ($saldoPendiente <= 0) {
+        $cuotasRestantes = 0;
+        }
+
 
     @endphp
+    <ul>
+        <li><strong>Cliente:</strong> {{ $prestamo->cliente?->nombres ?? 'Cliente no asignado' }}</li>
+        <li><strong>Cuotas:</strong> {{ $cuotasRestantes }}</li>
+        <li><strong>Modalidad:</strong> {{ $prestamo->modalidad_pago }}</li>
+        <li><strong>Fecha Inicio:</strong> {{ $prestamo->fecha_inicio }}</li>
+        <li><strong>Monto Base:</strong> {{ '$' . number_format($prestamo->monto, 0, ',', '.') }}</li>
+    </ul> 
+    
+    <hr>
+    
+    
     
     <div class="alert alert-info mt-3">
         <strong>Saldo pendiente con interés:</strong> {{ '$' . number_format($saldoPendiente, 0, ',', '.') }}<br>
@@ -75,6 +88,7 @@
                 <tr>
                     <th>Fecha</th>
                     <th>Monto</th>
+                    <th>Acciones</th> {{-- Nueva columna --}}
                 </tr>
             </thead>
             <tbody>
@@ -82,9 +96,20 @@
                     <tr>
                         <td>{{ \Carbon\Carbon::parse($pagoRealizado->fecha_pago)->format('d/m/Y') }}</td>
                         <td>{{ '$' . number_format($pagoRealizado->monto_abono, 0, ',', '.') }}</td>
+                        <td>
+                            <a href="{{ route('pagos.edit', $pagoRealizado->id) }}" class="btn btn-sm btn-primary">
+                                Editar
+                            </a>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
+            <tfoot>
+                <tr>
+                    <td><strong>Total abonado:</strong></td>
+                    <td>{{ '$' . number_format($totalPagado, 0, ',', '.') }}</td>
+                </tr>
+            </tfoot>
         </table>
     @else
         <p>No hay abonos registrados aún.</p>

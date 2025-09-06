@@ -14,12 +14,13 @@
                         <span class="card-title">{{ __('Update') }} Pago</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('pagos.update', $pago->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('pagos.update', $pago->id) }}" role="form" enctype="multipart/form-data">
                             @csrf
-
-                            @include('pago.form')
-
+                            @method('PATCH') {{-- O usa PUT si estás actualizando todo el recurso --}}
+                            
+                            @include('pago.form', ['pago' => $pago, 'prestamo' => $prestamo])
+                            
+                            <button type="submit" class="btn btn-primary">Actualizar</button>
                         </form>
                     </div>
                 </div>

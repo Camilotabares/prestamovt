@@ -84,18 +84,32 @@
 
                                         // Saldo pendiente
                                         $saldoPendiente = $saldoFinal - $totalPagado;
+
+                                        $cuotasTotales = $prestamo->cuotas;
+                                        $saldoFinal = $prestamo->monto + $interesTotal;
+                                        
+
+                                        // Primero, calcular cuotas restantes por cantidad de abonos
+                                        $cuotasRestantes = $cuotasTotales - $prestamo->pagos->count();
+
+                                        // Luego, si el saldo está saldado, forzar a 0 cuotas restantes
+                                        if ($saldoPendiente <= 0) {
+                                            $cuotasRestantes = 0;
+                                        }
+                                    
+
                                     @endphp
 
                                     <tr>
                                         <td>{{ ++$i }}</td>
                                         <td>
                                             @if($saldoPendiente <= 0)
-                                           
+                                            
                                                 <span class="badge badge-success">Estado: Pagado</span>
                                             @else
                                                 <span class="badge badge-warning">Estado: Pendiente</span>
                                             @endif
-                                           
+                                            
                                             <br>
                                             <strong>Saldo pendiente:</strong> {{ '$' . number_format($saldoPendiente, 0, ',', '.') }}<br>
                                             
@@ -105,7 +119,7 @@
                                             
 										<td >{{ $prestamo->cliente->nombres }}</td>
 										<td >{{ number_format($prestamo->monto, 0, ',', '.') }}</td>
-										<td >{{ $prestamo->cuotas }}</td>
+										<td>{{ $cuotasRestantes }}</td>
 										<td >{{ $prestamo->interes_porcentaje }}%</td>
                                         <td >{{ $prestamo->modalidad_pago }}</td>
 										<td >{{ $prestamo->fecha_inicio }}</td>
@@ -129,7 +143,9 @@
                         </div>
                     </div>
                 </div>
-                {!! $prestamos->withQueryString()->links() !!}
+                <div class="d-flex justify-content-center mt-4">
+                    {!! $prestamos->withQueryString()->links() !!}
+                </div>
             </div>
         </div>
     </div>

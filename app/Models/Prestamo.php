@@ -47,5 +47,16 @@ public function pagos()
 {
     return $this->hasMany(Pago::class);
 }
+public function getCuotasRestantesAttribute()
+{
+    $cuotasRestantes = $this->cuotas - $this->pagos()->count();
 
+    // Si el saldo está saldado, forzar a 0
+    $saldoPendiente = ($this->monto + $this->interes_total) - $this->pagos()->sum('monto_abono');
+    if ($saldoPendiente <= 0) {
+        $cuotasRestantes = 0;
+    }
+
+    return max($cuotasRestantes, 0); // Nunca negativo
+}
 }

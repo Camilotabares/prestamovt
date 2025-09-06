@@ -70,9 +70,10 @@ class PagoController extends Controller
      */
     public function edit($id): View
     {
-        $pago = Pago::find($id);
-
-        return view('pago.edit', compact('pago'));
+        $pago = Pago::findOrFail($id);
+        $prestamo = $pago->prestamo;
+    
+        return view('pago.edit', compact('pago', 'prestamo'));
     }
 
     /**
@@ -82,7 +83,7 @@ class PagoController extends Controller
     {
         $pago->update($request->validated());
 
-        return Redirect::route('pagos.index')
+        return Redirect::route('prestamos.show', $pago->prestamo_id)
             ->with('success', 'Pago actualizado exitosamente');
     }
 
