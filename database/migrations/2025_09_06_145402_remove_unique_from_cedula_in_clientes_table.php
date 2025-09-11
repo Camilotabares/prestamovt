@@ -16,7 +16,7 @@ return new class extends Migration
         $indexExists = DB::select("SHOW INDEX FROM clientes WHERE Key_name = 'clientes_cedula_unique'");
         if ($indexExists) {
             Schema::table('clientes', function (Blueprint $table) {
-                $table->dropUnique(['clientes_cedula_unique']);
+                $table->dropUnique(['cedula']);
             });
         }
     }
